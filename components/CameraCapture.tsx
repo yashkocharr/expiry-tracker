@@ -14,7 +14,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 export function CameraCapture({
   onResult,
   onError,
-  label = "📷 Scan label",
+  label = "📷 Take a photo of the label",
 }: {
   onResult: (result: ScanResult) => void;
   onError: (message: string) => void;

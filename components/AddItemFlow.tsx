@@ -66,12 +66,12 @@ export function AddItemFlow({
   }
 
   const scanLabel = !scanned
-    ? "📷 Scan label"
+    ? "📷 Take a photo of the label"
     : !scanned.expiryDate
-      ? "📷 Scan the expiry date"
+      ? "📷 Now photograph the expiry date"
       : !scanned.name
-        ? "📷 Scan the product name"
-        : "📷 Rescan a part";
+        ? "📷 Now photograph the name"
+        : "📷 Retake a photo";
 
   return (
     <div className="space-y-5">
@@ -80,6 +80,12 @@ export function AddItemFlow({
         onResult={applyScan}
         onError={(text) => setNotice({ kind: "warn", text })}
       />
+      {!scanned && !notice && (
+        <p className="text-sm text-foreground/50">
+          Point the camera at the printed product name or expiry date — it
+          fills the form for you.
+        </p>
+      )}
 
       {notice && (
         <p
