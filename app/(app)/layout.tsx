@@ -13,7 +13,7 @@ export default async function AppLayout({
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
       <main className="flex-1 px-4 pb-24 pt-6">{children}</main>
 
-      {/* Bottom nav — thumb-reachable, ≥44px touch targets. Add/Settings arrive in Phase 1. */}
+      {/* Bottom nav — thumb-reachable, ≥44px touch targets. */}
       <nav className="fixed inset-x-0 bottom-0 border-t border-black/10 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur dark:border-white/10">
         <div className="mx-auto flex max-w-md items-stretch justify-around">
           <Link
@@ -23,20 +23,20 @@ export default async function AppLayout({
             <span aria-hidden>🏠</span>
             Dashboard
           </Link>
-          <span
-            className="flex min-h-14 flex-1 cursor-not-allowed flex-col items-center justify-center gap-0.5 text-xs text-foreground/35"
-            title="Coming in Phase 1"
+          <Link
+            href="/items/new"
+            className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium"
           >
             <span aria-hidden>➕</span>
             Add
-          </span>
-          <span
-            className="flex min-h-14 flex-1 cursor-not-allowed flex-col items-center justify-center gap-0.5 text-xs text-foreground/35"
-            title="Coming soon"
+          </Link>
+          <Link
+            href="/settings"
+            className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium"
           >
             <span aria-hidden>⚙️</span>
             Settings
-          </span>
+          </Link>
         </div>
       </nav>
     </div>

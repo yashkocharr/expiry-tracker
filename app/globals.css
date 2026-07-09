@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Native widgets (date-picker popup, select dropdown) follow the active theme */
+  color-scheme: light dark;
 }
 
 @theme inline {
