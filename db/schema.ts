@@ -7,6 +7,7 @@ import {
   integer,
   pgEnum,
   index,
+  primaryKey,
   unique,
 } from "drizzle-orm/pg-core";
 
@@ -61,6 +62,19 @@ export const items = pgTable(
     index("items_user_status_idx").on(t.userId, t.status),
     index("items_expiry_idx").on(t.expiryDate),
   ],
+);
+
+// Per-user daily scan counter — caps Gemini usage (free-tier quota is small and shared).
+export const scanUsage = pgTable(
+  "scan_usage",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    day: date("day").notNull(),
+    count: integer("count").default(0).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.day] })],
 );
 
 // Guarantees idempotent reminders: a given threshold for a given item is sent at most once per channel.
