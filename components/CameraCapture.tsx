@@ -14,9 +14,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 export function CameraCapture({
   onResult,
   onError,
+  label = "📷 Scan label",
 }: {
   onResult: (result: ScanResult) => void;
   onError: (message: string) => void;
+  label?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -72,7 +74,7 @@ export function CameraCapture({
         onClick={() => inputRef.current?.click()}
         className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-foreground text-base font-medium text-background disabled:opacity-60"
       >
-        {busy ? "Reading label…" : "📷 Scan label"}
+        {busy ? "Reading photo…" : label}
       </button>
       {preview && (
         // eslint-disable-next-line @next/next/no-img-element -- transient local object URL

@@ -16,7 +16,9 @@ const MODEL = process.env.GEMINI_MODEL ?? "gemini-flash-lite-latest";
 const SCAN_PROMPT = `You extract product info from a photo of a product label or packaging.
 
 Report ONLY text that is actually visible and legible in the photo. Do not guess or invent values.
-If the photo does not clearly show a product label, return null for every field and confidence 0.
+If the photo does not clearly show product packaging, return null for every field and confidence 0.
+The photo may intentionally show only PART of the packaging (for example just the printed
+date stamp on a crimp, cap, or base) — extract whatever is clearly visible and null the rest.
 
 Rules:
 - expiryDate MUST be ISO yyyy-mm-dd, from the printed expiry / best-before / use-by date.
