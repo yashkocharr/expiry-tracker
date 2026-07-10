@@ -1,5 +1,7 @@
 "use client";
 
+import { PendingButton } from "@/components/PendingButton";
+
 export function DeleteItemButton({
   action,
 }: {
@@ -14,12 +16,12 @@ export function DeleteItemButton({
         }
       }}
     >
-      <button
-        type="submit"
+      <PendingButton
+        pendingText="Deleting…"
         className="flex min-h-12 w-full items-center justify-center rounded-xl border border-red-500/40 text-base font-medium text-red-600 dark:text-red-400"
       >
         Delete item
-      </button>
+      </PendingButton>
     </form>
   );
 }

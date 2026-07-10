@@ -1,4 +1,5 @@
 import { setItemStatus } from "@/app/(app)/items/actions";
+import { PendingButton } from "@/components/PendingButton";
 
 const btnCls =
   "flex min-h-11 w-full items-center justify-center gap-1 rounded-lg border border-black/15 text-sm font-medium dark:border-white/20";
@@ -16,9 +17,7 @@ function StatusForm({
     <form action={setItemStatus} className="flex-1">
       <input type="hidden" name="id" value={itemId} />
       <input type="hidden" name="status" value={status} />
-      <button type="submit" className={btnCls}>
-        {children}
-      </button>
+      <PendingButton className={btnCls}>{children}</PendingButton>
     </form>
   );
 }
