@@ -34,7 +34,10 @@ export function StatusActions({
   itemId: string;
   status: string;
 }) {
-  if (status === "active") {
+  // Expired items get the same closure actions as active ones — "I used it
+  // in time (forgot to log)" or "threw it out" — which is how the Expired
+  // list gets cleared. Restore is only for consumed/discarded.
+  if (status === "active" || status === "expired") {
     return (
       <div className="flex gap-2">
         <StatusForm itemId={itemId} status="consumed">
@@ -55,6 +58,5 @@ export function StatusActions({
     );
   }
 
-  // 'expired' transitions arrive with the Phase 3 cron; no quick actions yet.
   return null;
 }

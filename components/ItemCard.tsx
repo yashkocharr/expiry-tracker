@@ -1,20 +1,44 @@
 import Link from "next/link";
 import { CATEGORY_META } from "@/lib/categories";
-import { daysLeftLabel, formatDisplayDate } from "@/lib/dates";
+import {
+  daysLeftLabel,
+  formatDisplayDate,
+  urgencyOf,
+  type Urgency,
+} from "@/lib/dates";
 import { StatusActions } from "@/components/StatusActions";
 import type { items } from "@/db/schema";
 
 type Item = typeof items.$inferSelect;
 
+// Dark-mode-safe urgency palette (plan: expired red, ≤3d amber, ≤7d yellow).
+const URGENCY_TEXT: Record<Urgency, string> = {
+  expired: "text-red-600 dark:text-red-400",
+  critical: "text-amber-600 dark:text-amber-400",
+  soon: "text-yellow-600 dark:text-yellow-500",
+  normal: "text-foreground/60",
+};
+const URGENCY_EDGE: Record<Urgency, string> = {
+  expired: "border-l-red-500/70",
+  critical: "border-l-amber-500/70",
+  soon: "border-l-yellow-500/60",
+  normal: "border-l-transparent",
+};
+
 export function ItemCard({ item, daysLeft }: { item: Item; daysLeft: number }) {
   const cat = CATEGORY_META[item.category];
-  const inactive = item.status !== "active";
+  const done = item.status === "consumed" || item.status === "discarded";
+  const urgency: Urgency =
+    item.status === "expired" ? "expired" : done ? "normal" : urgencyOf(daysLeft);
+
+  const rightLabel =
+    item.status === "active" ? daysLeftLabel(daysLeft) : item.status;
 
   return (
     <article
-      className={`rounded-2xl border border-black/10 p-4 dark:border-white/10 ${
-        inactive ? "opacity-60" : ""
-      }`}
+      className={`rounded-2xl border border-l-4 border-black/10 p-4 dark:border-white/10 ${
+        URGENCY_EDGE[urgency]
+      } ${done ? "opacity-60" : ""}`}
     >
       <Link href={`/items/${item.id}/edit`} className="block">
         <div className="flex items-start justify-between gap-3">
@@ -30,8 +54,12 @@ export function ItemCard({ item, daysLeft }: { item: Item; daysLeft: number }) {
               {item.quantity ? ` · ${item.quantity}` : ""}
             </p>
           </div>
-          <p className="shrink-0 pt-0.5 text-right text-sm font-medium">
-            {item.status === "active" ? daysLeftLabel(daysLeft) : item.status}
+          <p
+            className={`shrink-0 pt-0.5 text-right text-sm font-medium ${
+              done ? "text-foreground/50" : URGENCY_TEXT[urgency]
+            }`}
+          >
+            {rightLabel}
           </p>
         </div>
       </Link>

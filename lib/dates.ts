@@ -34,6 +34,22 @@ export function daysLeftLabel(n: number): string {
   return `${n} days left`;
 }
 
+/** Pure-date arithmetic on ISO strings (Date.UTC normalizes overflow). */
+export function isoAddDays(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
+export type Urgency = "expired" | "critical" | "soon" | "normal";
+
+/** Urgency bands (plan §Phase 4): expired=red, ≤3d=amber, ≤7d=yellow. */
+export function urgencyOf(daysLeft: number): Urgency {
+  if (daysLeft < 0) return "expired";
+  if (daysLeft <= 3) return "critical";
+  if (daysLeft <= 7) return "soon";
+  return "normal";
+}
+
 /** "12 Aug 2026" — renders the calendar date faithfully regardless of server tz. */
 export function formatDisplayDate(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number);
