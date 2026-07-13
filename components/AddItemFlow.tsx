@@ -20,10 +20,11 @@ export function AddItemFlow({
   // different sides of the packaging, so a second photo fills the gaps
   // without wiping what the first one read.
   const [scanned, setScanned] = useState<ScanResult | null>(null);
-  // First photo wins as the thumbnail — it's usually the front of the pack.
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // Every photo taken persists with the item; the first is the thumbnail.
+  const [photos, setPhotos] = useState<string[]>([]);
 
-  function applyScan(result: ScanResult, scanImageUrl: string | null) {
+  function applyScan(result: ScanResult | null, scanImageUrl: string | null) {
+    if (!result) return; // upload-only mode isn't used on this page
     const unusable =
       result.confidence < SCAN_MIN_CONFIDENCE ||
       (!result.name && !result.expiryDate);
@@ -41,14 +42,14 @@ export function AddItemFlow({
       category: result.category ?? scanned?.category ?? null,
       confidence: result.confidence,
     };
-    const thumb = imageUrl ?? scanImageUrl;
+    const nextPhotos = scanImageUrl ? [...photos, scanImageUrl] : photos;
     setScanned(merged);
-    setImageUrl(thumb);
+    setPhotos(nextPhotos);
     setDefaults({
       name: merged.name ?? undefined,
       category: merged.category ?? undefined,
       expiryDate: merged.expiryDate ?? undefined,
-      imageUrl: thumb,
+      imageUrls: nextPhotos,
     });
     setFormKey((k) => k + 1);
 

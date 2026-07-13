@@ -15,6 +15,20 @@
       "when": 1783624471345,
       "tag": "0001_scan_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783962130616,
+      "tag": "0002_add_image_urls",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783962151158,
+      "tag": "0003_drop_image_url",
+      "breakpoints": true
     }
   ]
 }

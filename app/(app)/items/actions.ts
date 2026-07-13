@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { items } from "@/db/schema";
-import { deleteThumbnail } from "@/lib/blob";
+import { deletePhotos } from "@/lib/blob";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensureUser";
 import {
@@ -22,7 +22,13 @@ export type ItemFormState = {
 };
 
 function parseItemForm(formData: FormData) {
-  const parsed = itemFormSchema.safeParse(Object.fromEntries(formData));
+  // Object.fromEntries keeps only the last of repeated keys — collect the
+  // multi-valued photo field explicitly.
+  const raw: Record<string, unknown> = Object.fromEntries(formData);
+  raw.imageUrls = formData
+    .getAll("imageUrls")
+    .filter((v): v is string => typeof v === "string" && v.length > 0);
+  const parsed = itemFormSchema.safeParse(raw);
   if (parsed.success) return { data: parsed.data, errors: null };
   const errors: Record<string, string> = {};
   for (const issue of parsed.error.issues) {
@@ -48,7 +54,7 @@ export async function createItem(
     purchaseDate: data.purchaseDate ?? null,
     quantity: data.quantity ?? null,
     notes: data.notes ?? null,
-    imageUrl: data.imageUrl ?? null,
+    imageUrls: data.imageUrls?.length ? data.imageUrls : null,
   });
 
   revalidatePath("/dashboard");
@@ -76,9 +82,8 @@ export async function updateItem(
       purchaseDate: data.purchaseDate ?? null,
       quantity: data.quantity ?? null,
       notes: data.notes ?? null,
-      // The edit form carries the existing thumbnail through a hidden field;
-      // absent means the item never had one.
-      imageUrl: data.imageUrl ?? null,
+      // The edit form carries the item's photos through hidden fields.
+      imageUrls: data.imageUrls?.length ? data.imageUrls : null,
     })
     .where(and(eq(items.id, itemId), eq(items.userId, userId)))
     .returning({ id: items.id });
@@ -98,8 +103,8 @@ export async function deleteItem(itemId: string): Promise<void> {
   const [deleted] = await db
     .delete(items)
     .where(and(eq(items.id, itemId), eq(items.userId, userId)))
-    .returning({ imageUrl: items.imageUrl });
-  await deleteThumbnail(deleted?.imageUrl ?? null);
+    .returning({ imageUrls: items.imageUrls });
+  await deletePhotos(deleted?.imageUrls ?? null);
 
   revalidatePath("/dashboard");
   redirect("/dashboard");

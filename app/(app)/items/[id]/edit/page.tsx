@@ -4,7 +4,7 @@ import { items } from "@/db/schema";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensureUser";
 import { isUuid } from "@/lib/validators";
-import { ItemForm } from "@/components/ItemForm";
+import { EditItemFlow } from "@/components/EditItemFlow";
 import { DeleteItemButton } from "@/components/DeleteItemButton";
 import { deleteItem, updateItem } from "../../actions";
 
@@ -25,9 +25,8 @@ export default async function EditItemPage({
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Edit item</h1>
-      <ItemForm
+      <EditItemFlow
         action={updateItem.bind(null, item.id)}
-        submitLabel="Save changes"
         defaults={{
           name: item.name,
           category: item.category,
@@ -35,7 +34,7 @@ export default async function EditItemPage({
           purchaseDate: item.purchaseDate,
           quantity: item.quantity,
           notes: item.notes,
-          imageUrl: item.imageUrl,
+          imageUrls: item.imageUrls,
         }}
       />
 

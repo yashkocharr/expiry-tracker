@@ -15,10 +15,13 @@ export function CameraCapture({
   onResult,
   onError,
   label = "📷 Take a photo of the label",
+  extract = true,
 }: {
-  onResult: (result: ScanResult, imageUrl: string | null) => void;
+  onResult: (result: ScanResult | null, imageUrl: string | null) => void;
   onError: (message: string) => void;
   label?: string;
+  /** false = upload-only (attach photo, skip AI extraction) */
+  extract?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -39,7 +42,10 @@ export function CameraCapture({
 
       const body = new FormData();
       body.append("image", compressed, "label.jpg");
-      const res = await fetch("/api/scan", { method: "POST", body });
+      const res = await fetch(extract ? "/api/scan" : "/api/scan?extract=0", {
+        method: "POST",
+        body,
+      });
       const data: ScanResponse | null = await res.json().catch(() => null);
 
       if (!data || !data.ok) {

@@ -51,11 +51,16 @@ export async function POST(req: Request) {
     return json({ ok: false, error: "invalid_image" }, 400);
   }
 
+  // ?extract=0 = upload-only mode (attach a photo without burning a Gemini
+  // call) — used by the edit page. Both modes share the same daily quota.
+  const extract =
+    new URL(req.url).searchParams.get("extract") !== "0";
+
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const result = await extractLabel(bytes, file.type);
-    // Reuse the same compressed photo as the item thumbnail (Phase 5).
-    // Null when Blob isn't configured or upload fails — never blocks the scan.
+    const result = extract ? await extractLabel(bytes, file.type) : null;
+    // The compressed photo is stored with the item (imageUrls). Null when
+    // Blob isn't configured or upload fails — never blocks the scan.
     const imageUrl = await uploadThumbnail(userId, bytes, file.type);
     return json({ ok: true, result, imageUrl }, 200);
   } catch (err) {

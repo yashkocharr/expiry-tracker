@@ -27,11 +27,11 @@ export async function uploadThumbnail(
 }
 
 /** Best-effort blob cleanup when an item is deleted. */
-export async function deleteThumbnail(url: string | null): Promise<void> {
-  if (!url || !blobConfigured()) return;
+export async function deletePhotos(urls: string[] | null): Promise<void> {
+  if (!urls?.length || !blobConfigured()) return;
   try {
-    await del(url);
+    await del(urls);
   } catch (err) {
-    console.error("[blob] thumbnail delete failed:", err);
+    console.error("[blob] photo delete failed:", err);
   }
 }

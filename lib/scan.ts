@@ -8,8 +8,9 @@ export type ScanResult = {
   confidence: number; // 0..1
 };
 
+/** result is null in upload-only mode (?extract=0 — attach photo, skip Gemini). */
 export type ScanResponse =
-  | { ok: true; result: ScanResult; imageUrl: string | null }
+  | { ok: true; result: ScanResult | null; imageUrl: string | null }
   | {
       ok: false;
       error: "unauthorized" | "rate_limited" | "invalid_image" | "scan_failed";

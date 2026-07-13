@@ -48,7 +48,7 @@ export const items = pgTable(
     purchaseDate: date("purchase_date"),
     quantity: text("quantity"), // freeform, e.g. "500ml", "30 tablets"
     notes: text("notes"),
-    imageUrl: text("image_url"), // populated from Phase 5
+    imageUrls: text("image_urls").array(), // all label photos; [0] is the card thumbnail
     status: itemStatusEnum("status").default("active").notNull(),
     notifyLeadDays: integer("notify_lead_days").array(), // nullable override of category default
     createdAt: timestamp("created_at").defaultNow().notNull(),

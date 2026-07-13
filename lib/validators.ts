@@ -44,7 +44,7 @@ export const itemFormSchema = z
     purchaseDate: z.preprocess(emptyToUndefined, isoDate.optional()),
     quantity: optionalTrimmed(100),
     notes: optionalTrimmed(2000),
-    imageUrl: z.preprocess(emptyToUndefined, blobUrl.optional()),
+    imageUrls: z.array(blobUrl).max(6, "Max 6 photos per item").optional(),
   })
   // ISO yyyy-mm-dd compares lexicographically === chronologically
   .refine((v) => !v.purchaseDate || v.purchaseDate <= v.expiryDate, {

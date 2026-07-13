@@ -42,10 +42,10 @@ export function ItemCard({ item, daysLeft }: { item: Item; daysLeft: number }) {
     >
       <Link href={`/items/${item.id}/edit`} className="block">
         <div className="flex items-start justify-between gap-3">
-          {item.imageUrl && (
+          {item.imageUrls?.[0] && (
             // eslint-disable-next-line @next/next/no-img-element -- tiny blob thumbnail, skip the optimizer
             <img
-              src={item.imageUrl}
+              src={item.imageUrls[0]}
               alt=""
               loading="lazy"
               width={56}
