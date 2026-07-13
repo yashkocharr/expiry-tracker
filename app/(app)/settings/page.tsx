@@ -1,8 +1,21 @@
 import { SignOutButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { users } from "@/db/schema";
+import { db } from "@/lib/db";
 
 export default async function SettingsPage() {
-  const me = await currentUser();
+  const [{ userId }, me] = await Promise.all([auth(), currentUser()]);
+
+  // Reminders go to users.email — keep it in sync with Clerk here, the one
+  // page where Clerk's API is queried anyway (page views elsewhere stay
+  // a single fast SELECT).
+  const email = me?.primaryEmailAddress?.emailAddress;
+  if (userId && email) {
+    await db
+      .insert(users)
+      .values({ id: userId, email })
+      .onConflictDoUpdate({ target: users.id, set: { email } });
+  }
 
   return (
     <div className="space-y-6">
@@ -10,8 +23,9 @@ export default async function SettingsPage() {
 
       <section className="rounded-2xl border border-black/10 p-5 dark:border-white/10">
         <p className="text-sm text-foreground/60">Signed in as</p>
-        <p className="mt-0.5 font-medium">
-          {me?.primaryEmailAddress?.emailAddress}
+        <p className="mt-0.5 font-medium">{email}</p>
+        <p className="mt-2 text-xs text-foreground/50">
+          Reminder emails go to this address.
         </p>
       </section>
 

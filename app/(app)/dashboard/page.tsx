@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { and, asc, eq, ilike, inArray, lte, sql } from "drizzle-orm";
-import { items, users } from "@/db/schema";
+import { items } from "@/db/schema";
 import { db } from "@/lib/db";
 import { daysUntil, isoAddDays, todayInTz } from "@/lib/dates";
-import { ensureUser } from "@/lib/ensureUser";
+import { getCurrentAppUser } from "@/lib/ensureUser";
 import { CATEGORIES, type Category } from "@/lib/categories";
 import { FilterBar } from "@/components/FilterBar";
 import { ItemCard } from "@/components/ItemCard";
@@ -22,9 +22,9 @@ export default async function DashboardPage({
   const filter = (FILTERS.has(rawFilter) ? rawFilter : "all") as Filter;
   const q = (typeof sp.q === "string" ? sp.q : "").trim().slice(0, 100);
 
-  const userId = await ensureUser();
-  const me = await db.query.users.findFirst({ where: eq(users.id, userId) });
-  const tz = me?.timezone ?? "Asia/Kolkata";
+  const me = await getCurrentAppUser();
+  const userId = me.id;
+  const tz = me.timezone;
   const soonCutoff = isoAddDays(todayInTz(tz), 7);
 
   const conds = [eq(items.userId, userId)];
