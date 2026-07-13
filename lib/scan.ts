@@ -9,7 +9,7 @@ export type ScanResult = {
 };
 
 export type ScanResponse =
-  | { ok: true; result: ScanResult }
+  | { ok: true; result: ScanResult; imageUrl: string | null }
   | {
       ok: false;
       error: "unauthorized" | "rate_limited" | "invalid_image" | "scan_failed";

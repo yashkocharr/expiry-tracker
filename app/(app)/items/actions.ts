@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { items } from "@/db/schema";
+import { deleteThumbnail } from "@/lib/blob";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensureUser";
 import {
@@ -47,6 +48,7 @@ export async function createItem(
     purchaseDate: data.purchaseDate ?? null,
     quantity: data.quantity ?? null,
     notes: data.notes ?? null,
+    imageUrl: data.imageUrl ?? null,
   });
 
   revalidatePath("/dashboard");
@@ -74,6 +76,9 @@ export async function updateItem(
       purchaseDate: data.purchaseDate ?? null,
       quantity: data.quantity ?? null,
       notes: data.notes ?? null,
+      // The edit form carries the existing thumbnail through a hidden field;
+      // absent means the item never had one.
+      imageUrl: data.imageUrl ?? null,
     })
     .where(and(eq(items.id, itemId), eq(items.userId, userId)))
     .returning({ id: items.id });
@@ -90,9 +95,11 @@ export async function deleteItem(itemId: string): Promise<void> {
   const userId = await ensureUser();
   if (!isUuid(itemId)) redirect("/dashboard");
 
-  await db
+  const [deleted] = await db
     .delete(items)
-    .where(and(eq(items.id, itemId), eq(items.userId, userId)));
+    .where(and(eq(items.id, itemId), eq(items.userId, userId)))
+    .returning({ imageUrl: items.imageUrl });
+  await deleteThumbnail(deleted?.imageUrl ?? null);
 
   revalidatePath("/dashboard");
   redirect("/dashboard");

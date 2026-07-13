@@ -20,8 +20,10 @@ export function AddItemFlow({
   // different sides of the packaging, so a second photo fills the gaps
   // without wiping what the first one read.
   const [scanned, setScanned] = useState<ScanResult | null>(null);
+  // First photo wins as the thumbnail — it's usually the front of the pack.
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  function applyScan(result: ScanResult) {
+  function applyScan(result: ScanResult, scanImageUrl: string | null) {
     const unusable =
       result.confidence < SCAN_MIN_CONFIDENCE ||
       (!result.name && !result.expiryDate);
@@ -39,11 +41,14 @@ export function AddItemFlow({
       category: result.category ?? scanned?.category ?? null,
       confidence: result.confidence,
     };
+    const thumb = imageUrl ?? scanImageUrl;
     setScanned(merged);
+    setImageUrl(thumb);
     setDefaults({
       name: merged.name ?? undefined,
       category: merged.category ?? undefined,
       expiryDate: merged.expiryDate ?? undefined,
+      imageUrl: thumb,
     });
     setFormKey((k) => k + 1);
 

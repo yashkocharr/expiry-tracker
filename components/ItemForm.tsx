@@ -17,6 +17,7 @@ export type ItemFormDefaults = {
   purchaseDate?: string | null;
   quantity?: string | null;
   notes?: string | null;
+  imageUrl?: string | null;
 };
 
 function Field({
@@ -56,6 +57,9 @@ export function ItemForm({
 
   return (
     <form action={formAction} className="space-y-5">
+      {defaults?.imageUrl && (
+        <input type="hidden" name="imageUrl" value={defaults.imageUrl} />
+      )}
       {state.message && (
         <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400">
           {state.message}

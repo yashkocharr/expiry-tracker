@@ -35,6 +35,7 @@ export default async function EditItemPage({
           purchaseDate: item.purchaseDate,
           quantity: item.quantity,
           notes: item.notes,
+          imageUrl: item.imageUrl,
         }}
       />
 

@@ -24,6 +24,18 @@ const emptyToUndefined = (v: unknown) =>
 const optionalTrimmed = (max: number) =>
   z.preprocess(emptyToUndefined, z.string().trim().max(max).optional());
 
+/** Only accept thumbnails we uploaded ourselves (Vercel Blob public URLs). */
+const blobUrl = z.string().refine((v) => {
+  try {
+    const u = new URL(v);
+    return (
+      u.protocol === "https:" && u.hostname.endsWith(".blob.vercel-storage.com")
+    );
+  } catch {
+    return false;
+  }
+}, "Invalid image URL");
+
 export const itemFormSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required").max(200, "Max 200 characters"),
@@ -32,6 +44,7 @@ export const itemFormSchema = z
     purchaseDate: z.preprocess(emptyToUndefined, isoDate.optional()),
     quantity: optionalTrimmed(100),
     notes: optionalTrimmed(2000),
+    imageUrl: z.preprocess(emptyToUndefined, blobUrl.optional()),
   })
   // ISO yyyy-mm-dd compares lexicographically === chronologically
   .refine((v) => !v.purchaseDate || v.purchaseDate <= v.expiryDate, {

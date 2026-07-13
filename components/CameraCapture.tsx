@@ -16,7 +16,7 @@ export function CameraCapture({
   onError,
   label = "📷 Take a photo of the label",
 }: {
-  onResult: (result: ScanResult) => void;
+  onResult: (result: ScanResult, imageUrl: string | null) => void;
   onError: (message: string) => void;
   label?: string;
 }) {
@@ -46,7 +46,7 @@ export function CameraCapture({
         onError(ERROR_MESSAGES[data?.ok === false ? data.error : "scan_failed"]);
         return;
       }
-      onResult(data.result);
+      onResult(data.result, data.imageUrl);
     } catch {
       onError("Couldn't process that photo — fill the form manually.");
     } finally {

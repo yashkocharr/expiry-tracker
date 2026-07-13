@@ -42,7 +42,18 @@ export function ItemCard({ item, daysLeft }: { item: Item; daysLeft: number }) {
     >
       <Link href={`/items/${item.id}/edit`} className="block">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
+          {item.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element -- tiny blob thumbnail, skip the optimizer
+            <img
+              src={item.imageUrl}
+              alt=""
+              loading="lazy"
+              width={56}
+              height={56}
+              className="h-14 w-14 shrink-0 rounded-xl border border-black/10 object-cover dark:border-white/10"
+            />
+          )}
+          <div className="min-w-0 flex-1">
             <span className="inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">
               {cat.emoji} {cat.label}
             </span>

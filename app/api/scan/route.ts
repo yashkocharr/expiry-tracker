@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { sql } from "drizzle-orm";
 import { scanUsage } from "@/db/schema";
+import { uploadThumbnail } from "@/lib/blob";
 import { todayInTz } from "@/lib/dates";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensureUser";
@@ -51,11 +52,12 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await extractLabel(
-      new Uint8Array(await file.arrayBuffer()),
-      file.type,
-    );
-    return json({ ok: true, result }, 200);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const result = await extractLabel(bytes, file.type);
+    // Reuse the same compressed photo as the item thumbnail (Phase 5).
+    // Null when Blob isn't configured or upload fails — never blocks the scan.
+    const imageUrl = await uploadThumbnail(userId, bytes, file.type);
+    return json({ ok: true, result, imageUrl }, 200);
   } catch (err) {
     console.error("[scan] extraction failed:", err);
     return json({ ok: false, error: "scan_failed" }, 502);
