@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { CATEGORIES, CATEGORY_META } from "@/lib/categories";
+import { PhotoGallery } from "@/components/PhotoGallery";
 import type { ItemFormState } from "@/app/(app)/items/actions";
 
 const EMPTY_STATE: ItemFormState = { ok: false, errors: {} };
@@ -62,19 +63,7 @@ export function ItemForm({
       {photos.map((url) => (
         <input key={url} type="hidden" name="imageUrls" value={url} />
       ))}
-      {photos.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto">
-          {photos.map((url) => (
-            // eslint-disable-next-line @next/next/no-img-element -- tiny blob thumbnails
-            <img
-              key={url}
-              src={url}
-              alt="Attached label photo"
-              className="h-14 w-14 shrink-0 rounded-xl border border-black/10 object-cover dark:border-white/10"
-            />
-          ))}
-        </div>
-      )}
+      <PhotoGallery urls={photos} />
       {state.message && (
         <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400">
           {state.message}
